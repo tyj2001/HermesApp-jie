@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: read 
     
     steps:
     - name: Checkout
@@ -25,6 +25,11 @@ jobs:
       uses: android-actions/setup-android@v3
       with:
         packages: android-ndk;27b,cmake;3.22.300
+
+    - name: Configure Android SDK
+      run: |
+        echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
+        echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> $GITHUB_ENV
 
     - name: Build Debug APK
       run: |
