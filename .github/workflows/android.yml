@@ -21,10 +21,22 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Clone terminal submodule manually
+    - name: Clone third-party submodules
       run: |
-        if [ ! -d "terminal/src" ]; then
-          git clone https://github.com/SelectXn00b/HermesTerminalCore.git terminal
+        # Fix SSH → HTTPS for any remaining git@ references
+        git config --local url."https://github.com/".insteadOf "git@github.com:"
+        
+        # Clone missing third-party deps
+        if [ ! -d "quickjs/thirdparty/quickjs" ]; then
+          mkdir -p quickjs/thirdparty && git clone --depth 1 https://github.com/bellard/quickjs.git quickjs/thirdparty/quickjs
+        fi
+        
+        if [ ! -d "mmd/third_party/saba" ]; then
+          mkdir -p mmd/third_party && git clone --depth 1 https://github.com/benikabocha/saba.git mmd/third_party/saba
+        fi
+        
+        if [ ! -d "fbx/third_party/ufbx" ]; then
+          mkdir -p fbx/third_party && git clone --depth 1 https://github.com/ufbx/ufbx.git fbx/third_party/ufbx
         fi
 
     - name: Setup Android SDK
