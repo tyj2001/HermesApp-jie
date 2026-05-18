@@ -49,7 +49,7 @@ android {
                     "-DMNN_LOW_MEMORY=ON",
                     "-DMNN_CPU_WEIGHT_DEQUANT_GEMM=ON",
                     "-DMNN_KLEIDIAI=OFF"
-            }
+                )
         }
     }
 
