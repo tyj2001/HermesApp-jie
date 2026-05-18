@@ -21,33 +21,45 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Init all git submodules (SSH → HTTPS fix)
+    - name: Clone missing dependencies
       run: |
-        # Replace all SSH git@ URLs with HTTPS so they work on GitHub runners
-        git config --local url."https://github.com/".insteadOf "git@github.com:"
+        # Replace SSH URLs with HTTPS for any git operations
+        git config --global url."https://github.com/".insteadOf "git@github.com:"
         
-        # Init each submodule individually (avoid --recursive to skip broken nested bullet3 ref)
-        git submodule update --init terminal
-        git submodule update --init mnn/src/main/cpp/MNN
-        git submodule update --init llama/third_party/llama.cpp
-        git submodule update --init mmd/third_party/saba
-        git submodule update --init app/src/main/cpp/thirdparty/ncnn
-        git submodule update --init app/src/main/cpp/thirdparty/sherpa-ncnn
-        git submodule update --init quickjs/thirdparty/quickjs
-        git submodule update --init fbx/third_party/ufbx
-        
-        # Clone bullet3 physics engine manually (nested submodule with missing URL in saba repo)
-        if [ ! -d "mmd/third_party/bullet3" ]; then
-          mkdir -p mmd/third_party/bullet3
-          git clone --depth 1 https://github.com/bulletphysics/bullet3.git mmd/third_party/bullet3
+        # terminal is a regular folder in the repo, but empty - fill it
+        if [ ! -f "terminal/build.gradle.kts" ]; then
+          rm -rf terminal && git clone --depth 1 https://github.com/SelectXn00b/HermesTerminalCore.git terminal
         fi
         
-        # Verify critical submodules
-        echo "=== Checking critical submodules ==="
-        ls -la terminal/src 2>/dev/null || echo "terminal MISSING"
-        ls -la mnn/src/main/cpp/MNN 2>/dev/null || echo "MNN MISSING"
-        ls -la mmd/third_party/saba 2>/dev/null || echo "saba MISSING"
-        ls -la mmd/third_party/bullet3 2>/dev/null || echo "bullet3 MISSING"
+        # MNN submodule - might be empty gitlink, re-clone if missing CMakeLists.txt
+        if [ ! -f "mnn/src/main/cpp/MNN/CMakeLists.txt" ]; then
+          rm -rf mnn/src/main/cpp/MNN && git clone --depth 1 https://github.com/alibaba/MNN.git mnn/src/main/cpp/MNN
+        fi
+        
+        # llama.cpp
+        if [ ! -f "llama/third_party/llama.cpp/CMakeLists.txt" ]; then
+          rm -rf llama/third_party/llama.cpp && git clone --depth 1 https://github.com/ggml-org/llama.cpp.git llama/third_party/llama.cpp
+        fi
+        
+        # saba + bullet3 for mmd
+        if [ ! -f "mmd/third_party/saba/CMakeLists.txt" ]; then
+          rm -rf mmd/third_party/saba && git clone --depth 1 https://github.com/benikabocha/saba.git mmd/third_party/saba
+        fi
+        if [ ! -f "mmd/third_party/bullet3/CMakeLists.txt" ]; then
+          rm -rf mmd/third_party/bullet3 && git clone --depth 1 https://github.com/bulletphysics/bullet3.git mmd/third_party/bullet3
+        fi
+        
+        # Other third-party deps
+        [ -f "app/src/main/cpp/thirdparty/ncnn/CMakeLists.txt" ] || git clone --depth 1 https://github.com/Tencent/ncnn.git app/src/main/cpp/thirdparty/ncnn
+        [ -f "app/src/main/cpp/thirdparty/sherpa-ncnn/CMakeLists.txt" ] || git clone --depth 1 https://github.com/k2-fsa/sherpa-ncnn.git app/src/main/cpp/thirdparty/sherpa-ncnn
+        [ -f "quickjs/thirdparty/quickjs/VERSION" ] || git clone --depth 1 https://github.com/bellard/quickjs.git quickjs/thirdparty/quickjs
+        [ -f "fbx/third_party/ufbx/ufbx.c" ] || git clone --depth 1 https://github.com/ufbx/ufbx.git fbx/third_party/ufbx
+        
+        echo "=== Dependency check ==="
+        ls terminal/build.gradle.kts 2>/dev/null && echo "terminal OK" || echo "terminal MISSING"
+        ls mnn/src/main/cpp/MNN/CMakeLists.txt 2>/dev/null && echo "MNN OK" || echo "MNN MISSING"
+        ls mmd/third_party/saba/CMakeLists.txt 2>/dev/null && echo "saba OK" || echo "saba MISSING"
+        ls mmd/third_party/bullet3/CMakeLists.txt 2>/dev/null && echo "bullet3 OK" || echo "bullet3 MISSING"
 
     - name: Setup Android SDK
       run: |
