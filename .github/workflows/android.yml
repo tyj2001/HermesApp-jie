@@ -21,10 +21,11 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Fix terminal submodule (SSH → HTTPS)
+    - name: Clone terminal submodule manually
       run: |
-        git config --local url."https://github.com/SelectXn00b/".insteadOf "git@github.com:SelectXn00b/"
-        git submodule update --init --recursive terminal
+        if [ ! -d "terminal/src" ]; then
+          git clone https://github.com/SelectXn00b/HermesTerminalCore.git terminal
+        fi
 
     - name: Setup Android SDK
       run: |
