@@ -72,9 +72,11 @@ jobs:
       run: |
         java -version
         
-        # Clear potentially corrupted gradle caches
+        # Clear gradle caches and build intermediates for clean build
         rm -rf ~/.gradle/caches/8.13/transforms/
         rm -rf ~/.gradle/caches/modules-2/files-2.1/com.kyant/
+        rm -rf app/build
+        rm -rf .gradle
         
         chmod +x gradlew
         ./gradlew :app:assembleDebug --no-daemon 2>&1
