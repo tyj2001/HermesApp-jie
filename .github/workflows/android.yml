@@ -36,9 +36,11 @@ jobs:
           rm -rf mnn/src/main/cpp/MNN && git clone --depth 1 https://github.com/alibaba/MNN.git mnn/src/main/cpp/MNN
         fi
         
-        # llama.cpp
-        if [ ! -f "llama/third_party/llama.cpp/CMakeLists.txt" ]; then
-          rm -rf llama/third_party/llama.cpp && git clone --depth 1 https://github.com/ggml-org/llama.cpp.git llama/third_party/llama.cpp
+        # nlohmann json required by llama.cpp - copy to common/json/single_include/nlohmann
+        if [ ! -f "llama/third_party/llama.cpp/common/json/single_include/nlohmann/json.hpp" ]; then
+          mkdir -p llama/third_party/llama.cpp/common/json/single_include/nlohmann
+          curl -sL https://raw.githubusercontent.com/nlohmann/json/v3.11.3/single_include/nlohmann/json.hpp -o llama/third_party/llama.cpp/common/json/single_include/nlohmann/json.hpp
+          curl -sL https://raw.githubusercontent.com/nlohmann/json/v3.11.3/single_include/nlohmann/json_fwd.hpp -o llama/third_party/llama.cpp/common/json/single_include/nlohmann/json_fwd.hpp
         fi
         
         # saba + bullet3 for mmd
