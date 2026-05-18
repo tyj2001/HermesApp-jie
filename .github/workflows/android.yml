@@ -26,12 +26,28 @@ jobs:
         # Replace all SSH git@ URLs with HTTPS so they work on GitHub runners
         git config --local url."https://github.com/".insteadOf "git@github.com:"
         
-        # Initialize all submodules recursively
-        git submodule update --init --recursive
+        # Init each submodule individually (avoid --recursive to skip broken nested bullet3 ref)
+        git submodule update --init terminal
+        git submodule update --init mnn/src/main/cpp/MNN
+        git submodule update --init llama/third_party/llama.cpp
+        git submodule update --init mmd/third_party/saba
+        git submodule update --init app/src/main/cpp/thirdparty/ncnn
+        git submodule update --init app/src/main/cpp/thirdparty/sherpa-ncnn
+        git submodule update --init quickjs/thirdparty/quickjs
+        git submodule update --init fbx/third_party/ufbx
         
-        # If any submodules still missing, clone manually
-        [ -d "terminal/src" ] || git clone --depth 1 https://github.com/SelectXn00b/HermesTerminalCore.git terminal
-        [ -d "mnn/src/main/cpp/MNN" ] || git clone --depth 1 https://github.com/alibaba/MNN.git mnn/src/main/cpp/MNN
+        # Clone bullet3 physics engine manually (nested submodule with missing URL in saba repo)
+        if [ ! -d "mmd/third_party/bullet3" ]; then
+          mkdir -p mmd/third_party/bullet3
+          git clone --depth 1 https://github.com/bulletphysics/bullet3.git mmd/third_party/bullet3
+        fi
+        
+        # Verify critical submodules
+        echo "=== Checking critical submodules ==="
+        ls -la terminal/src 2>/dev/null || echo "terminal MISSING"
+        ls -la mnn/src/main/cpp/MNN 2>/dev/null || echo "MNN MISSING"
+        ls -la mmd/third_party/saba 2>/dev/null || echo "saba MISSING"
+        ls -la mmd/third_party/bullet3 2>/dev/null || echo "bullet3 MISSING"
 
     - name: Setup Android SDK
       run: |
