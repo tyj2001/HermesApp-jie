@@ -1,20 +1,22 @@
 pluginManagement {
     repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
         maven { url = uri("https://maven.aliyun.com/repository/google") }
         maven { url = uri("https://maven.aliyun.com/repository/gradle-plugin") }
         maven { url = uri("https://maven.aliyun.com/repository/central") }
-        google()
-        gradlePluginPortal()
-        mavenCentral()
+        maven { url = uri("https://dl.google.com/dl/android/maven2/") }
     }
 }
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        maven { url = uri("https://maven.aliyun.com/repository/google") }
-        maven { url = uri("https://maven.aliyun.com/repository/central") }
         google()
         mavenCentral()
+        maven { url = uri("https://maven.aliyun.com/repository/google") }
+        maven { url = uri("https://maven.aliyun.com/repository/central") }
+        maven { url = uri("https://dl.google.com/dl/android/maven2/") }
         maven { url = uri("https://jitpack.io") }
         maven { url = uri("https://dl.bintray.com/rikkaw/Shizuku") }
         maven { url = uri("https://api.xposed.info/") }
