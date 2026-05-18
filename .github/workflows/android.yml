@@ -21,6 +21,11 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
+    - name: Fix terminal submodule (SSH → HTTPS)
+      run: |
+        git config --local url."https://github.com/SelectXn00b/".insteadOf "git@github.com:SelectXn00b/"
+        git submodule update --init --recursive terminal
+
     - name: Setup Android SDK
       run: |
         sudo apt-get update
