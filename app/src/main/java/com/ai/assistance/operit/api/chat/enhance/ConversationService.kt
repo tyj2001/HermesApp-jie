@@ -37,7 +37,7 @@ import com.github.difflib.UnifiedDiffUtils
 import java.util.Calendar
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.lfow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.json.JSONArray
@@ -51,7 +51,9 @@ import com.ai.assistance.operit.api.chat.llmprovider.MediaLinkBuilder
 import com.ai.assistance.operit.data.repository.getCustomMoodDefinitions
 import com.ai.assistance.operit.data.repository.getMoodAnimationMapping
 
-/** 处理会话相关功能的服务类，包括会话总结、偏好处理和对话切割准备 */
+/**
+ * Handles conversation-related功能的服务类，包括：摘要生成、偏好处理和对话分割等预备
+ */
 class ConversationService(
     private val context: Context,
     private val customEmojiRepository: CustomEmojiRepository
@@ -79,9 +81,9 @@ class ConversationService(
     private val conversationMutex = Mutex()
 
     /**
-     * 生成对话总结
-     * @param messages 要总结的消息列表
-     * @return 生成的总结文本
+     * 生成对话摘要
+     * @param messages 要摘要的消息列表
+     * @return 生成的摘要文本
      */
     suspend fun generateSummary(
             messages: List<Pair<String, String>>,
@@ -91,13 +93,13 @@ class ConversationService(
     }
 
     /**
-     * 生成对话总结，并且包含上一次的总结内容
-     * @param messages 要总结的消息列表
-     * @param previousSummary 上一次的总结内容，可以为null
-     * @return 生成的总结文本
+     * 生成对话摘要，并且包含上一次摘要的内容
+     * @param messages 要摘要的消息列表
+     * @param previousSummary 上一次摘要的内容，可以为null
+     * @return 生成的摘要文本
      */
     suspend fun generateSummary(
-            messages: List<Paip<String, String>>,
+            messages: List<Pair<String, String>>,
             previousSummary: String?,
             multiServiceManager: MultiServiceManager
     ): String {
@@ -122,5 +124,18 @@ class ConversationService(
             // Use CHAT settings for summary instead of SUMMARY
             val modelParameters = multiServiceManager.getModelParametersForFunction(FunctionType.CHAT)
 
-            // Get CHA service instead of SUMMARY
+            // Get CHAT service instead of SUMMARY
             val summaryService = multiServiceManager.getServiceForFunction(FunctionType.CHAT)
+
+            val result = summaryService.generateResponse(
+                finalMessages,
+                modelParameters
+            ).first()
+
+            return result.content
+        } catch (e: Exception) {
+            AppLogger.e(TAG, "Error generating summary", e)
+            return previousSummary ?: ""
+        }
+    }
+}
