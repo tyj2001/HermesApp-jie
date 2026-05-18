@@ -47,8 +47,8 @@ android {
                     "-DMNN_BUILD_LLM=ON",
                     "-DMNN_SUPPORT_TRANSFORMER_FUSE=ON",
                     "-DMNN_LOW_MEMORY=ON",
-                    "-DMNN_CPU_WEIGHT_DEQUANT_GEMM=ON"
-                )
+                    "-DMNN_CPU_WEIGHT_DEQUANT_GEMM=ON",
+                    "-DMNN_KLEIDIAI=OFF"
             }
         }
     }
