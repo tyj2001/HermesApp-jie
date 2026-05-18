@@ -66,12 +66,9 @@ jobs:
     - name: Setup Android SDK
       run: |
         sudo apt-get update
-        sudo apt-get install -y openjdk-17-jdk
+        sudo apt-get install -y openjdk-21-jdk
 
     - name: Build Debug APK
-      env:
-        JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-10/x64
-        PATH: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-10/x64/bin:$PATH
       run: |
         java -version
         
