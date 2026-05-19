@@ -81,10 +81,3 @@ jobs:
         
         chmod +x gradlew
         ./gradlew :app:assembleDebug --no-daemon 2>&1
-
-    - name: Upload to Release
-      uses: softprops/action-gh-release@v2
-      if: success()
-      with:
-        files: app/build/outputs/apk/debug/*.apk
-        generate_release_notes: false
