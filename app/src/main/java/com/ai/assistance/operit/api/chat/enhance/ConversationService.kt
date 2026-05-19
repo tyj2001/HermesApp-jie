@@ -248,34 +248,4 @@ class ConversationService(
             throw e
         }
     }
-            previousSummary: String?,
-            multiServiceManager: MultiServiceManager
-    ): String {
-        try {
-            val useEnglish = LocaleUtils.getCurrentLanguage(context).lowercase().startsWith("en")
-            val systemPrompt = FunctionalPrompts.buildSummarySystemPrompt(previousSummary, useEnglish)
-            val sanitizedMessages = ChatUtils.stripGeminiThoughtSignatureMetaTurns(messages)
-
-            val finalMessages =
-                listOf(PromptTurn(kind = PromptTurnKind.SYSTEM, content = systemPrompt)) +
-                    sanitizedMessages
-
-            // Get all model parameters from preferences (with enabled state)
-            // Use CHAT settings for summary instead of SUMMARY
-            val modelParameters = multiServiceManager.getModelParametersForFunction(FunctionType.CHAT)
-
-            // Get CHAT service instead of SUMMARY
-            val summaryService = multiServiceManager.getServiceForFunction(FunctionType.CHAT)
-
-            val result = summaryService.generateResponse(
-                finalMessages,
-                modelParameters
-            ).first()
-
-            return result.content
-        } catch (e: Exception) {
-            AppLogger.e(TAG, "Error generating summary", e)
-            return previousSummary ?: ""
-        }
-    }
 }
