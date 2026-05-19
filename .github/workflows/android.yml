@@ -87,4 +87,4 @@ jobs:
       if: success()
       with:
         files: app/build/outputs/apk/debug/*.apk
-        generate_release_notes: true
+        generate_release_notes: false
