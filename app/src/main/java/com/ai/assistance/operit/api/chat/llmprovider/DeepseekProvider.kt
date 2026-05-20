@@ -117,13 +117,16 @@ class DeepseekProvider(
 
         // 如果启用Tool Call且传入了工具列表，添加tools定义
         // 注意：豆包(MiniMax)等Provider不支持tool_choice参数，添加会导致2013错误
+        // MiniMax API (minimaxi.com) 不支持 tool_choice:auto
+        val isMiniMaxProvider = apiEndpoint.contains("minimaxi.com", ignoreCase = true) || 
+                                apiEndpoint.contains("minimax", ignoreCase = true)
         var toolsJson: String? = null
         if (effectiveEnableToolCall) {
             val tools = buildToolDefinitions(availableTools!!)
             if (tools.length() > 0) {
                 jsonObject.put("tools", tools)
-                // 仅在支持tool_choice的Provider中添加该参数
-                if (providerType != com.ai.assistance.operit.data.model.ApiProviderType.DOUBAO) {
+                // 仅在支持tool_choice的Provider中添加该参数（豆包/MiniMax不支持，会报2013错误）
+                if (providerType != com.ai.assistance.operit.data.model.ApiProviderType.DOUBAO && !isMiniMaxProvider) {
                     jsonObject.put("tool_choice", "auto")
                 }
                 toolsJson = tools.toString()

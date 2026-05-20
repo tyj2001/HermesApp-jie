@@ -20,7 +20,7 @@ import org.json.JSONObject
  * Mirrors DeepseekProvider behavior for reasoning_content handling when thinking is enabled.
  */
 class KimiProvider(
-    apiEndpoint: String,
+    private val apiEndpoint: String,
     apiKeyProvider: ApiKeyProvider,
     modelName: String,
     client: OkHttpClient,
@@ -108,14 +108,17 @@ class KimiProvider(
         }
 
         val effectiveEnableToolCall = enableToolCall && availableTools != null && availableTools.isNotEmpty()
+        // MiniMax API (minimaxi.com) 不支持 tool_choice:auto
+        val isMiniMaxProvider = apiEndpoint.contains("minimaxi.com", ignoreCase = true) || 
+                                apiEndpoint.contains("minimax", ignoreCase = true)
 
         var toolsJson: String? = null
         if (effectiveEnableToolCall) {
             val tools = buildToolDefinitions(availableTools!!)
             if (tools.length() > 0) {
                 jsonObject.put("tools", tools)
-                // 仅在支持tool_choice的Provider中添加该参数（豆包不支持，会报2013错误）
-                if (providerType != ApiProviderType.DOUBAO) {
+                // 仅在支持tool_choice的Provider中添加该参数（豆包/MiniMax不支持，会报2013错误）
+                if (providerType != ApiProviderType.DOUBAO && !isMiniMaxProvider) {
                     jsonObject.put("tool_choice", "auto")
                 }
                 toolsJson = tools.toString()
