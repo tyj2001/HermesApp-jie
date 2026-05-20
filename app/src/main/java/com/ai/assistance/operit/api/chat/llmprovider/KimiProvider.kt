@@ -20,7 +20,7 @@ import org.json.JSONObject
  * Mirrors DeepseekProvider behavior for reasoning_content handling when thinking is enabled.
  */
 class KimiProvider(
-    private val apiEndpoint: String,
+    apiEndpoint: String,
     apiKeyProvider: ApiKeyProvider,
     modelName: String,
     client: OkHttpClient,

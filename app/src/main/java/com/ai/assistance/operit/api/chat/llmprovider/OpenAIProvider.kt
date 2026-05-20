@@ -85,12 +85,12 @@ import com.ai.assistance.operit.api.chat.llmprovider.MediaLinkParser
  * @param enableToolCall 是否启用Tool Call API格式转换（默认false）
  */
 open class OpenAIProvider(
-    private val apiEndpoint: String,
+    protected val apiEndpoint: String,
     private val apiKeyProvider: ApiKeyProvider,
     val modelName: String,
     private val client: OkHttpClient,
     private val customHeaders: Map<String, String> = emptyMap(),
-    private val providerType: ApiProviderType = ApiProviderType.OPENAI,
+    protected val providerType: ApiProviderType = ApiProviderType.OPENAI,
     protected val supportsVision: Boolean = false, // 是否支持图片处理
     protected val supportsAudio: Boolean = false, // 是否支持音频输入
     protected val supportsVideo: Boolean = false, // 是否支持视频输入
