@@ -116,12 +116,16 @@ class DeepseekProvider(
         val effectiveEnableToolCall = enableToolCall && availableTools != null && availableTools.isNotEmpty()
 
         // 如果启用Tool Call且传入了工具列表，添加tools定义
+        // 注意：豆包(MiniMax)等Provider不支持tool_choice参数，添加会导致2013错误
         var toolsJson: String? = null
         if (effectiveEnableToolCall) {
             val tools = buildToolDefinitions(availableTools!!)
             if (tools.length() > 0) {
                 jsonObject.put("tools", tools)
-                jsonObject.put("tool_choice", "auto")
+                // 仅在支持tool_choice的Provider中添加该参数
+                if (providerType != com.ai.assistance.operit.data.model.ApiProviderType.DOUBAO) {
+                    jsonObject.put("tool_choice", "auto")
+                }
                 toolsJson = tools.toString()
             }
         }

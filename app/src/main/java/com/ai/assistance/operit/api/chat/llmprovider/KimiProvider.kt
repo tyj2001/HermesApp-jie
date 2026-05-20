@@ -114,7 +114,10 @@ class KimiProvider(
             val tools = buildToolDefinitions(availableTools!!)
             if (tools.length() > 0) {
                 jsonObject.put("tools", tools)
-                jsonObject.put("tool_choice", "auto")
+                // 仅在支持tool_choice的Provider中添加该参数（豆包不支持，会报2013错误）
+                if (providerType != ApiProviderType.DOUBAO) {
+                    jsonObject.put("tool_choice", "auto")
+                }
                 toolsJson = tools.toString()
             }
         }
